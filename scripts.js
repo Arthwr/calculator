@@ -7,6 +7,8 @@ const display = document.querySelector(".display");
 const controls = document.querySelector(".controls");
 const buttons = document.querySelectorAll("button");
 const clearbtn = document.querySelector("#clear-btn");
+const equalbtn = document.querySelector("#equal-btn");
+const decimalbtn = document.querySelector("#decimal-btn");
 
 function operate(operator, num1, num2) {
   switch (operator) {
@@ -50,16 +52,21 @@ controls.addEventListener("click", (event) => {
       typeof valueList[0] !== "undefined" &&
       typeof valueList[1] !== "undefined"
     ) {
-      result = operate(operator, valueList[0], valueList[1]);
-      clearDisplay();
-      displayNumber(result);
-      valueList.splice(0, 2);
-      storeValue(0);
+      calculate();
     }
     operator = button.textContent;
   }
 });
 
+function calculate() {
+  result = operate(operator, valueList[0], valueList[1]);
+  clearDisplay();
+  displayNumber(result);
+  valueList.splice(0, 2);
+  storeValue(0);
+}
+
+//  Utility buttons
 clearbtn.addEventListener("click", () => {
   clearDisplay();
   isFirstNumberEntered = false;
@@ -67,9 +74,27 @@ clearbtn.addEventListener("click", () => {
   operator = undefined;
 });
 
-// Utils functions
+equalbtn.addEventListener("click", () => {
+  if (
+    typeof valueList[0] !== "undefined" &&
+    typeof valueList[1] !== "undefined" &&
+    typeof operator !== "undefined"
+  ) {
+    calculate();
+    isFirstNumberEntered = true;
+  }
+});
+
+// Helper functions
 function displayNumber(value) {
   display.textContent += value;
+
+  if (display.textContent.toString().includes(".")) {
+    console.log("btn disabled");
+    decimalbtn.disabled = true;
+  } else {
+    decimalbtn.disabled = false;
+  }
 }
 
 function storeValue(index) {
