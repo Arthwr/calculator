@@ -1,5 +1,8 @@
-let operator;
-let result;
+let operator, result;
+let isFirstNumberEntered = false;
+let isOperatorUsed = false;
+let isErrorOccurred = false;
+let valueList = [];
 
 const display = document.querySelector(".display");
 const controls = document.querySelector(".controls");
@@ -15,9 +18,7 @@ function operate(operator, num1, num2) {
     case "-":
       return num1 - num2;
     case "/":
-      if (num2 === 0) {
-        throw new Error("Can't divide by zero");
-      }
+      if (num2 === 0) throw new Error("Can't divide by zero");
       return num1 / num2;
     case "*":
       return num1 * num2;
@@ -27,34 +28,21 @@ function operate(operator, num1, num2) {
 }
 
 // Controls
-let isFirstNumberEntered = false;
-let isOperatorUsed = false;
-let isErrorOccured = false;
-let valueList = [];
-
 controls.addEventListener("click", (event) => {
   const button = event.target;
 
   if (button.classList.contains("numbers")) {
-    if (isFirstNumberEntered || isErrorOccured) {
+    if (isFirstNumberEntered || isErrorOccurred) {
       clearDisplay();
       isFirstNumberEntered = false;
-      isErrorOccured = false;
+      isErrorOccurred = false;
     }
     displayNumber(button.textContent);
-    if (!isOperatorUsed) {
-      storeValue(0, Number(display.textContent));
-    } else {
-      storeValue(1, Number(display.textContent));
-    }
+    storeValue(isOperatorUsed ? 1 : 0, Number(display.textContent));
   } else if (button.classList.contains("operators")) {
     isFirstNumberEntered = true;
     isOperatorUsed = true;
-
-    if (
-      typeof valueList[0] !== "undefined" &&
-      typeof valueList[1] !== "undefined"
-    ) {
+    if (valueList.length === 2) {
       calculate();
     }
     operator = button.textContent;
@@ -67,32 +55,24 @@ function calculate() {
     result = operate(operator, valueList[0], valueList[1]);
     const formattedNumber = +result.toFixed(14);
     displayNumber(formattedNumber);
-    valueList.splice(0, 2);
+    valueList = [];
     storeValue(0, formattedNumber);
     isFirstNumberEntered = true;
   } catch (error) {
+    isErrorOccurred = true;
     display.textContent = error.message;
-    valueList = [];
-    isErrorOccured = true;
-    isOperatorUsed = false;
+    resetCalculatorState();
   }
 }
 
 //  Utility buttons
 clearbtn.addEventListener("click", () => {
   clearDisplay();
-  isFirstNumberEntered = false;
-  isOperatorUsed = false;
-  decimalbtn.disabled = false;
-  operator = undefined;
+  resetCalculatorState();
 });
 
 equalbtn.addEventListener("click", () => {
-  if (
-    typeof valueList[0] !== "undefined" &&
-    typeof valueList[1] !== "undefined" &&
-    typeof operator !== "undefined"
-  ) {
+  if (valueList.length === 2 && operator !== "undefined") {
     calculate();
   }
 });
@@ -100,12 +80,7 @@ equalbtn.addEventListener("click", () => {
 // Helper functions
 function displayNumber(value) {
   display.textContent += value;
-
-  if (display.textContent.toString().includes(".")) {
-    decimalbtn.disabled = true;
-  } else {
-    decimalbtn.disabled = false;
-  }
+  decimalbtn.disabled = display.textContent.includes(".");
 }
 
 function storeValue(index, value) {
@@ -114,4 +89,12 @@ function storeValue(index, value) {
 
 function clearDisplay() {
   display.textContent = "";
+}
+
+function resetCalculatorState() {
+  valueList = [];
+  isOperatorUsed = false;
+  isFirstNumberEntered = false;
+  decimalbtn.disabled = false;
+  operator = undefined;
 }
