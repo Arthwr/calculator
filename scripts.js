@@ -98,3 +98,8 @@ function resetCalculatorState() {
   decimalbtn.disabled = false;
   operator = undefined;
 }
+
+// separate concerns of button & operator functions
+// restrict typing of letters & (optionally allow only numbers under certain conditions e.g. no 0015 , but 0.15)
+// add keyboard support
+// add backspace button
