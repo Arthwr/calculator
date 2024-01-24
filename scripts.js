@@ -7,9 +7,9 @@ let valueList = [];
 const display = document.querySelector(".display");
 const controls = document.querySelector(".controls");
 const buttons = document.querySelectorAll("button");
-const clearbtn = document.querySelector("#clear-btn");
-const equalbtn = document.querySelector("#equal-btn");
-const decimalbtn = document.querySelector("#decimal-btn");
+const clearBtn = document.querySelector("#clear-btn");
+const equalBtn = document.querySelector("#equal-btn");
+const decimalBtn = document.querySelector("#decimal-btn");
 
 function operate(operator, num1, num2) {
   switch (operator) {
@@ -38,7 +38,7 @@ controls.addEventListener("click", (event) => {
       isErrorOccurred = false;
     }
     displayNumber(button.textContent);
-    storeValue(isOperatorUsed ? 1 : 0, Number(display.textContent));
+    storeValue(isOperatorUsed ? 1 : 0, Number(display.value));
   } else if (button.classList.contains("operators")) {
     isFirstNumberEntered = true;
     isOperatorUsed = true;
@@ -46,6 +46,18 @@ controls.addEventListener("click", (event) => {
       calculate();
     }
     operator = button.textContent;
+  }
+});
+
+display.addEventListener("input", (event) => {
+  const inputValue = event.data;
+  const selectionStart = display.selectionStart;
+  const selectionEnd = display.selectionEnd;
+
+  // Check if the value is digit or a valid symbol
+  if (!/^-?(0(\.\d+)?|[1-9]\d*(\.\d*)?|0(\.\d*)?)$/.test(display.value)) {
+    display.value = display.value.replace(inputValue, "");
+    display.setSelectionRange(selectionStart, selectionEnd);
   }
 });
 
@@ -60,18 +72,18 @@ function calculate() {
     isFirstNumberEntered = true;
   } catch (error) {
     isErrorOccurred = true;
-    display.textContent = error.message;
+    display.value = error.message;
     resetCalculatorState();
   }
 }
 
 //  Utility buttons
-clearbtn.addEventListener("click", () => {
+clearBtn.addEventListener("click", () => {
   clearDisplay();
   resetCalculatorState();
 });
 
-equalbtn.addEventListener("click", () => {
+equalBtn.addEventListener("click", () => {
   if (valueList.length === 2 && operator !== "undefined") {
     calculate();
   }
@@ -79,8 +91,8 @@ equalbtn.addEventListener("click", () => {
 
 // Helper functions
 function displayNumber(value) {
-  display.textContent += value;
-  decimalbtn.disabled = display.textContent.includes(".");
+  display.value += value;
+  decimalBtn.disabled = display.value.includes(".");
 }
 
 function storeValue(index, value) {
@@ -88,14 +100,14 @@ function storeValue(index, value) {
 }
 
 function clearDisplay() {
-  display.textContent = "";
+  display.value = "";
 }
 
 function resetCalculatorState() {
   valueList = [];
   isOperatorUsed = false;
   isFirstNumberEntered = false;
-  decimalbtn.disabled = false;
+  decimalBtn.disabled = false;
   operator = undefined;
 }
 
@@ -103,3 +115,4 @@ function resetCalculatorState() {
 // restrict typing of letters & (optionally allow only numbers under certain conditions e.g. no 0015 , but 0.15)
 // add keyboard support
 // add backspace button
+// restrict maximum length of typing into display & result (to not overflow)
