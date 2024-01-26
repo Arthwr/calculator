@@ -12,7 +12,7 @@ const equalBtn = document.querySelector("#equal-btn");
 const decimalBtn = document.querySelector("#decimal-btn");
 const backspaceBtn = document.querySelector("#backspace-btn");
 
-// Controls
+// Numbers and operators
 controls.addEventListener("click", (event) => {
   const button = event.target;
 
@@ -22,6 +22,14 @@ controls.addEventListener("click", (event) => {
     handleOperatorButton(button.textContent);
   }
 });
+
+//  Utility buttons
+clearBtn.addEventListener("click", handleClearButton);
+equalBtn.addEventListener("click", handleEqualButton);
+backspaceBtn.addEventListener("click", handleBackspaceButton);
+
+// Keyboard support
+document.addEventListener("keydown", handleKeyDown);
 
 // Input Validation
 display.addEventListener("input", (event) => {
@@ -35,14 +43,6 @@ display.addEventListener("input", (event) => {
     display.setSelectionRange(selectionStart, selectionEnd);
   }
 });
-
-// Keyboard support
-document.addEventListener("keydown", handleKeyDown);
-
-//  Utility buttons
-clearBtn.addEventListener("click", handleClearButton);
-equalBtn.addEventListener("click", handleEqualButton);
-backspaceBtn.addEventListener("click", handleBackspaceButton);
 
 // Helper functions
 function operate(operator, num1, num2) {
