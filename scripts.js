@@ -32,20 +32,9 @@ controls.addEventListener("click", (event) => {
   const button = event.target;
 
   if (button.classList.contains("numbers")) {
-    if (isFirstNumberEntered || isErrorOccurred) {
-      clearDisplay();
-      isFirstNumberEntered = false;
-      isErrorOccurred = false;
-    }
-    displayNumber(button.textContent);
-    storeValue(isOperatorUsed ? 1 : 0, Number(display.value));
+    handleNumberButton(button.textContent);
   } else if (button.classList.contains("operators")) {
-    isFirstNumberEntered = true;
-    isOperatorUsed = true;
-    if (valueList.length === 2) {
-      calculate();
-    }
-    operator = button.textContent;
+    handleOperatorButton(button.textContent);
   }
 });
 
@@ -60,6 +49,15 @@ display.addEventListener("input", (event) => {
     display.setSelectionRange(selectionStart, selectionEnd);
   }
 });
+
+// Keyboard support
+document.addEventListener("keydown", handleKeyDown);
+
+//  Utility buttons
+clearBtn.addEventListener("click", handleClearButton);
+equalBtn.addEventListener("click", handleEqualButton);
+
+// Helper functions
 
 function calculate() {
   clearDisplay();
@@ -77,19 +75,58 @@ function calculate() {
   }
 }
 
-//  Utility buttons
-clearBtn.addEventListener("click", () => {
-  clearDisplay();
-  resetCalculatorState();
-});
+function handleNumberButton(value) {
+  if (isFirstNumberEntered || isErrorOccurred) {
+    clearDisplay();
+    isFirstNumberEntered = false;
+    isErrorOccurred = false;
+  }
+  displayNumber(value);
+  storeValue(isOperatorUsed ? 1 : 0, Number(display.value));
+}
 
-equalBtn.addEventListener("click", () => {
+function handleOperatorButton(value) {
+  isFirstNumberEntered = true;
+  isOperatorUsed = true;
+  if (valueList.length === 2) {
+    calculate();
+  }
+  operator = value;
+}
+
+function handleEqualButton() {
   if (valueList.length === 2 && operator !== "undefined") {
     calculate();
   }
-});
+}
 
-// Helper functions
+function handleClearButton() {
+  clearDisplay();
+  resetCalculatorState();
+}
+
+function handleKeyDown(event) {
+  const key = event.key;
+
+  if (/^[0-9.]$/.test(key)) {
+    event.preventDefault();
+    handleNumberButton(key);
+  } else {
+    switch (key) {
+      case "*":
+      case "/":
+      case "+":
+      case "-":
+        handleOperatorButton(key);
+        break;
+      case "=":
+      case "Enter":
+        handleEqualButton();
+        break;
+    }
+  }
+}
+
 function displayNumber(value) {
   display.value += value;
   decimalBtn.disabled = display.value.includes(".");
@@ -111,8 +148,5 @@ function resetCalculatorState() {
   operator = undefined;
 }
 
-// separate concerns of button & operator functions
-// restrict typing of letters & (optionally allow only numbers under certain conditions e.g. no 0015 , but 0.15)
-// add keyboard support
 // add backspace button
 // restrict maximum length of typing into display & result (to not overflow)
