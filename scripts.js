@@ -10,22 +10,7 @@ const buttons = document.querySelectorAll("button");
 const clearBtn = document.querySelector("#clear-btn");
 const equalBtn = document.querySelector("#equal-btn");
 const decimalBtn = document.querySelector("#decimal-btn");
-
-function operate(operator, num1, num2) {
-  switch (operator) {
-    case "+":
-      return num1 + num2;
-    case "-":
-      return num1 - num2;
-    case "/":
-      if (num2 === 0) throw new Error("Can't divide by zero");
-      return num1 / num2;
-    case "*":
-      return num1 * num2;
-    default:
-      throw new Error("Invalid operator");
-  }
-}
+const backspaceBtn = document.querySelector("#backspace-btn");
 
 // Controls
 controls.addEventListener("click", (event) => {
@@ -38,6 +23,7 @@ controls.addEventListener("click", (event) => {
   }
 });
 
+// Input Validation
 display.addEventListener("input", (event) => {
   const inputValue = event.data;
   const selectionStart = display.selectionStart;
@@ -56,8 +42,24 @@ document.addEventListener("keydown", handleKeyDown);
 //  Utility buttons
 clearBtn.addEventListener("click", handleClearButton);
 equalBtn.addEventListener("click", handleEqualButton);
+backspaceBtn.addEventListener("click", handleBackspaceButton);
 
 // Helper functions
+function operate(operator, num1, num2) {
+  switch (operator) {
+    case "+":
+      return num1 + num2;
+    case "-":
+      return num1 - num2;
+    case "/":
+      if (num2 === 0) throw new Error("Can't divide by zero");
+      return num1 / num2;
+    case "*":
+      return num1 * num2;
+    default:
+      throw new Error("Invalid operator");
+  }
+}
 
 function calculate() {
   clearDisplay();
@@ -105,11 +107,22 @@ function handleClearButton() {
   resetCalculatorState();
 }
 
+function handleBackspaceButton() {
+  const inputValue = display.value;
+  if (isErrorOccurred) {
+    handleClearButton();
+  } else if (inputValue.length > 0) {
+    const resultString = inputValue.slice(0, -1);
+    display.value = resultString;
+    storeValue(isOperatorUsed ? 1 : 0, Number(display.value));
+  }
+}
+
 function handleKeyDown(event) {
   const key = event.key;
+  event.preventDefault();
 
   if (/^[0-9.]$/.test(key)) {
-    event.preventDefault();
     handleNumberButton(key);
   } else {
     switch (key) {
@@ -122,6 +135,10 @@ function handleKeyDown(event) {
       case "=":
       case "Enter":
         handleEqualButton();
+        break;
+      case "Backspace":
+      case "Delete":
+        handleBackspaceButton();
         break;
     }
   }
@@ -148,5 +165,4 @@ function resetCalculatorState() {
   operator = undefined;
 }
 
-// add backspace button
 // restrict maximum length of typing into display & result (to not overflow)
