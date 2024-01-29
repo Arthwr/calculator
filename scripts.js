@@ -11,6 +11,7 @@ const clearBtn = document.querySelector("#clear-btn");
 const equalBtn = document.querySelector("#equal-btn");
 const decimalBtn = document.querySelector("#decimal-btn");
 const backspaceBtn = document.querySelector("#backspace-btn");
+const signBtn = document.querySelector("#sign-btn");
 
 // Numbers and operators
 controls.addEventListener("click", (event) => {
@@ -27,22 +28,10 @@ controls.addEventListener("click", (event) => {
 clearBtn.addEventListener("click", handleClearButton);
 equalBtn.addEventListener("click", handleEqualButton);
 backspaceBtn.addEventListener("click", handleBackspaceButton);
+signBtn.addEventListener("click", handleSignButton);
 
 // Keyboard support
 document.addEventListener("keydown", handleKeyDown);
-
-// Input Validation
-display.addEventListener("input", (event) => {
-  const inputValue = event.data;
-  const selectionStart = display.selectionStart;
-  const selectionEnd = display.selectionEnd;
-
-  // Check if the value is digit or a valid symbol
-  if (!/^-?(0(\.\d+)?|[1-9]\d*(\.\d*)?|0(\.\d*)?)$/.test(display.value)) {
-    display.value = display.value.replace(inputValue, "");
-    display.setSelectionRange(selectionStart, selectionEnd);
-  }
-});
 
 // Helper functions
 function operate(operator, num1, num2) {
@@ -83,8 +72,11 @@ function handleNumberButton(value) {
     isFirstNumberEntered = false;
     isErrorOccurred = false;
   }
-  displayNumber(value);
-  storeValue(isOperatorUsed ? 1 : 0, Number(display.value));
+  // Prevent input overflow condition
+  if (display.value.length <= 18) {
+    displayNumber(value);
+    storeValue(isOperatorUsed ? 1 : 0, Number(display.value));
+  }
 }
 
 function handleOperatorButton(value) {
@@ -105,6 +97,15 @@ function handleEqualButton() {
 function handleClearButton() {
   clearDisplay();
   resetCalculatorState();
+}
+
+function handleSignButton() {
+  const currentValue = Number(display.value);
+  if (display.value !== "" && currentValue !== 0) {
+    const newValue = -currentValue;
+    display.value = newValue;
+    storeValue(isOperatorUsed ? 1 : 0, newValue);
+  }
 }
 
 function handleBackspaceButton() {
@@ -165,4 +166,8 @@ function resetCalculatorState() {
   operator = undefined;
 }
 
-// restrict maximum length of typing into display & result (to not overflow)
+// Todo (sometime in future)
+// 1. Add backspace support to remove all highlighted digits
+// 2. Input validation: 
+//    a) Prevent numbers like 0123 to be typed in by User (starting any non single digit from 0)
+//    b) Prevent double decimals like 0.1.2
