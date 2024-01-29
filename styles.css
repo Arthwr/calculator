@@ -78,3 +78,34 @@ button {
 .b-wrapper:last-child button:last-child {
   max-width: 85.97px;
 }
+
+
+/* UI Styles */
+
+#sign-btn,
+#backspace-btn {
+  border-radius: 4px;
+  color: #312f2f;
+  background-color: #D9EFFC;
+}
+
+.operators,
+#clear-btn,
+#equal-btn {
+  border-color: #386fa4;
+  border-radius: 4px;
+  background-color: #a6d9f7;
+  color: #312f2f;
+}
+
+.numbers {
+  background-color: #bccce0;
+  color: #312f2f;
+  border-radius: 4px;
+}
+
+button:active {
+  transform: translateY(2px); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
