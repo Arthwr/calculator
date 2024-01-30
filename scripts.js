@@ -173,4 +173,3 @@ function resetCalculatorState() {
 //    a) Prevent numbers like 0123 to be typed in by User (starting any non single digit from 0)
 //    b) Prevent double decimals like 0.1.2
 // 3. Add a synched visual pressed effect with keyboard (aka pressing button on keyboard corresponds with visual button being pressed in browser)
-// 4. Fix storing value when result is being affected by sign +- button.
